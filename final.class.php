@@ -5,6 +5,7 @@ class final_rest
 
 
 /**
+ * Isela Juarez-Cendejas
  * @api  /api/v1/setTemp/
  * @apiName setTemp
  * @apiDescription Add remote temperature measurement
