@@ -12,6 +12,11 @@ const EXCHANGES = [
 $(document).ready(function() {
 	getExchanges();
 	$('#exchangeSelect').on('change', getStocks);
+	// Add event listener to detailsButton
+	$('#detailsButton').on('click', function() {
+		// Toggle visibility of details table
+		$('.details-table').toggle();
+	});
 });
 
 function getExchanges() {
@@ -54,32 +59,33 @@ function getStocks() {
 
 function getDetails() {
 	var stock = $('#stockSelect').val();
-	var multiplier = 1;
-	var timespan = 'day';
-	var from = to - 7 * 24 * 60 * 60 * 1000; // 7 days ago
-	var to = new Date().getTime();
 	a=$.ajax({
-		url: URL + '/v2/aggs/ticker/${stock}/range/${multiplier}/${timespan}/${from}/${to}?apiKey=${API_KEY}',
-		method: 'GET'
+		url: URL + '/v2/aggs/ticker/' + stock + '/range/',
+		method: 'GET',
+		data: {
+			apiKey: API_KEY,
+			multiplier: 1,
+			timespan: 'day',
+			to: new Date().getTime(),
+			from: to - 7 * 24 * 60 * 60 * 1000
+		}
 	}).done(function(data) {
 		console.log(data);
 		// Display data on stocks.html
-		
-
+		// Populate the details table with the retrieved data
+		var detailsRow = $('#detailsTable tbody tr');
+		detailsRow.empty();
+		$('<td>').text(data.c).appendTo(detailsRow);
+		$('<td>').text(data.h).appendTo(detailsRow);
+		$('<td>').text(data.l).appendTo(detailsRow);
+		$('<td>').text(data.n).appendTo(detailsRow);
+		$('<td>').text(data.o).appendTo(detailsRow);
+		$('<td>').text(data.otc).appendTo(detailsRow);
+		$('<td>').text(new Date(data.t).toLocaleString()).appendTo(detailsRow);
+		$('<td>').text(data.v).appendTo(detailsRow);
+		$('<td>').text(data.vw).appendTo(detailsRow);
 	}).fail(function(error) {
 		console.log('error', error.statusText);
 	});
-}
-// Helper function to get the date of the specified number of days in the past
-function getPastDate(days) {
-	var pastDate = new Date();
-	pastDate.setDate(pastDate.getDate() - days);
-	return pastDate.toISOString().slice(0,10);
-}
-
-// Helper function to format date as yyyy-mm-dd
-function getFormattedDate(timestamp) {
-	var date = new Date(timestamp);
-	return date.toISOString().slice(0,10);
 }
   
