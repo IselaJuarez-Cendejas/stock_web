@@ -16,6 +16,7 @@ $(document).ready(function() {
 	$('#detailsButton').on('click', function() {
 		// Toggle visibility of details table
 		$('.details-table').toggle();
+		getDetails();
 	});
 });
 
@@ -59,31 +60,31 @@ function getStocks() {
 
 function getDetails() {
 	var stock = $('#stockSelect').val();
+	var now = new Date().getTime();
+	var from = now - 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+	var stockDetailsUrl = URL + '/v2/aggs/ticker/' + stock + '/range/1/day/' + from + '/' + now;
 	a=$.ajax({
-		url: URL + '/v2/aggs/ticker/' + stock + '/range/',
+		url: stockDetailsUrl,
 		method: 'GET',
 		data: {
 			apiKey: API_KEY,
-			multiplier: 1,
-			timespan: 'day',
-			to: new Date().getTime(),
-			from: to - 7 * 24 * 60 * 60 * 1000
 		}
 	}).done(function(data) {
 		console.log(data);
 		// Display data on stocks.html
 		// Populate the details table with the retrieved data
-		var detailsRow = $('#detailsTable tbody tr');
-		detailsRow.empty();
-		$('<td>').text(data.c).appendTo(detailsRow);
-		$('<td>').text(data.h).appendTo(detailsRow);
-		$('<td>').text(data.l).appendTo(detailsRow);
-		$('<td>').text(data.n).appendTo(detailsRow);
-		$('<td>').text(data.o).appendTo(detailsRow);
-		$('<td>').text(data.otc).appendTo(detailsRow);
-		$('<td>').text(new Date(data.t).toLocaleString()).appendTo(detailsRow);
-		$('<td>').text(data.v).appendTo(detailsRow);
-		$('<td>').text(data.vw).appendTo(detailsRow);
+		var detailsTable = $('.details-table');
+		detailsTable.empty();
+		$.each(data.results, function(i, result) {
+			var detailsRow = $('<tr>');
+			$('<td>').text(new Date(result.t).toLocaleString()).appendTo(detailsRow);
+			$('<td>').text(result.o).appendTo(detailsRow);
+			$('<td>').text(result.h).appendTo(detailsRow);
+			$('<td>').text(result.l).appendTo(detailsRow);
+			$('<td>').text(result.c).appendTo(detailsRow);
+			$('<td>').text(result.v).appendTo(detailsRow);
+			detailsRow.appendTo(detailsTable);
+		});
 	}).fail(function(error) {
 		console.log('error', error.statusText);
 	});
