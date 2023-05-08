@@ -1,0 +1,54 @@
+<?php
+// Start session
+session_start();
+
+// Connect to the SQLite database
+$DBSTRING = "sqlite:cse383.db";
+include "sql.inc";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+	// Step 3 (Process logout POST variable and set session)
+
+
+	// Step 1
+	// Get the username and pasword from the $_POST variables
+	
+	// Prepare and execute the SQL query to validate the login credentials
+	try {
+		$DATA=GET_SQL("select * from auth where username=? and password=?",$username,$password);
+		// Set session variable
+		if (count($DATA) > 0) {
+			// user and password worked - set session variables
+		}
+		else {
+			// No data retrieved - username/password not found
+			// Set session variable to not logged in
+		}
+	}
+	catch  (Exception $e) {
+		// Database Error
+		// Set session variable to not logged in
+	}
+
+}
+Print "
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Login</title>
+</head>
+<body>";
+if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
+    //  Write the login form here  (2.a.i)
+    print ("");
+}
+else {
+    //  Write the logged in secure data here (add a log out function) (2.b.i)
+    print ("");
+}
+?>
+</body>
+</html>
