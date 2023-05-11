@@ -12,15 +12,13 @@ const EXCHANGES = [
 $(document).ready(function () {
 	getExchanges();
 	$('#exchangeSelect').on('change', getStocks);
-	// Add event listener to detailsButton
+	
 	$('#detailsButton').on('click', function () {
-		// Toggle visibility of details table
-		$('.details-table').toggle();
 		getDetails();
+		//detailsTable.hidden = false;
 	});
+
 	$('#newsButton').on('click', function () {
-		// Toggle visibility of details table
-		//$('.news-table').toggle();
 		getNews();
 	});
 });
@@ -62,7 +60,7 @@ function getStocks() {
 
 async function getDetails() {
 	var stock = $('#stockSelect').val();
-	var returndata = [];
+	//var returndata = [];
 	var now = new Date().getTime();
 	var from = now - 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 	var stockDetailsUrl = URL + '/v2/aggs/ticker/' + stock + '/range/1/day/' + from + '/' + now;
@@ -87,12 +85,12 @@ async function getDetails() {
 			$('<td>').text(result.v).appendTo(detailsRow);
 			detailsRow.appendTo(detailsTable);
 		});
-		console.log(data.results);
+		//console.log(data.results);
 		tickerDetails(data.results);
 	}).fail(function (error) {
 		console.log('error', error.statusText);
 	});
-	return returndata;
+	//return returndata;
 }
 
 async function tickerDetails(prices) {
@@ -146,13 +144,32 @@ async function getNews() {
 	}).done(function (data) {
 		console.log(data);
 		// Display data on stocks.html
+		$('#tickerName').text(stock);
 		$.each(data.results, function (i, result) {
-			$('#newsTitle').text(result.title);
-			$('newsDate').text(result.timestamp);
-			$('#newsSource').text(result.source);
-			$('newsDescription').text(result.description);
+			var newsRow = $('<tr>');
+			$('<td>').text(result.title).appendTo(newsRow);
+			$('<td>').text(result.article_url).appendTo(newsRow);
+			$('<td>').text(result.author).appendTo(newsRow);
+			newsRow.appendTo('.news-table');
+		});
+		saveNewsToDatabase({
+			"ticker": stock,
+			"tickerDetails": data.results
 		});
 	}).fail(function (error) {
 		console.log('error', error.statusText);
 	});
-} 
+}
+
+function saveNewsToDatabase(json) {
+	$.ajax({
+		url: 'final.php',
+		method: 'POST',
+		data: {
+			queryType: 'tickerNews',
+			jsonData: JSON.stringify(json),
+			date: new Date().toISOString().slice(0, 10),
+			ticker: $('#stockSelect').val()
+		}
+	});
+}

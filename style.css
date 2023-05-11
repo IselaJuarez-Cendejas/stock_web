@@ -1,3 +1,6 @@
-.details-table {
-    display: none;
+.position-absolute h1,
+.position-absolute h2 {
+  color: white;
+  background-color: crimson;
+  text-align: center;
 }
