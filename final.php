@@ -1,9 +1,4 @@
 <?php
-/*
-scott campbell
-Kurt Johnson
-display temps
-*/
 
 $DBSTRING = "" ; // secret database location 
 include "sql.inc";
