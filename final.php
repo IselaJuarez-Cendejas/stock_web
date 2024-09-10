@@ -5,7 +5,7 @@ Kurt Johnson
 display temps
 */
 
-$DBSTRING = "sqlite:cse383.db"; // This must be updated to your real database location 
+$DBSTRING = "" ; // secret database location 
 include "sql.inc";
 
 // phpinfo();
