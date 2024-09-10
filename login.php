@@ -3,7 +3,7 @@
 session_start();
 
 // Connect to the SQLite database
-$DBSTRING = "sqlite:cse383.db";
+$DBSTRING = " "; // secret database location
 include "sql.inc";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
